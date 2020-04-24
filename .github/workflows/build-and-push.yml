@@ -1,0 +1,46 @@
+name: Build and push
+on:
+  push:
+  schedule:
+    - cron: '42 2 * * *'
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: Amsterdam/signals
+          ref: master
+
+      - name: Docker login
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Docker build
+        run: |
+          cd api/
+          docker build -t signalen/backend:$GITHUB_SHA .
+
+      - name: Docker push
+        run: docker push signalen/backend:$GITHUB_SHA
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: Amsterdam/signals-frontend
+          ref: master
+
+      - name: Docker login
+        run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Docker build
+        run: docker build -t signalen/frontend:$GITHUB_SHA .
+
+      - name: Docker push
+        run: docker push signalen/frontend:$GITHUB_SHA

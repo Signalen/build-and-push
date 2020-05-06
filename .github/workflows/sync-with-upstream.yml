@@ -1,0 +1,58 @@
+name: Sync with upstream
+
+on:
+  push:
+  schedule:
+    - cron: '42 2 * * *'
+
+env:
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key and known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_KEY_BACKEND }}"
+
+      - name: Clone repository
+        run: |
+          git clone --branch master --depth 1 git@github.com:Signalen/backend.git backend
+
+      - name: Pull and push
+        run: |
+          cd backend/
+          git remote add upstream git@github.com:Amsterdam/signals.git
+          git pull upstream master && git push origin master
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup SSH key and known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${{ secrets.SSH_KEY_FRONTEND }}"
+
+      - name: Pull and push master
+        run: |
+          git clone --branch master --depth 1 git@github.com:Signalen/frontend.git master
+          cd master/
+          git remote add upstream git@github.com:Amsterdam/signals-frontend.git
+          git pull upstream master && git push origin master
+
+      - name: Pull and push develop
+        run: |
+          git clone --branch develop --depth 1 git@github.com:Signalen/frontend.git develop
+          cd develop/
+          git remote add upstream git@github.com:Amsterdam/signals-frontend.git
+          git pull upstream develop && git push origin develop

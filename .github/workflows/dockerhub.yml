@@ -22,9 +22,12 @@ jobs:
         run: |
           cd api/
           docker build -t signalen/backend:$GITHUB_SHA .
+          docker build -t signalen/backend:latest .
 
       - name: Docker push
-        run: docker push signalen/backend:$GITHUB_SHA
+        run: |
+          docker push signalen/backend:$GITHUB_SHA
+          docker push signalen/backend:latest
 
   frontend:
     name: Frontend
@@ -40,7 +43,11 @@ jobs:
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Docker build
-        run: docker build -t signalen/frontend:$GITHUB_SHA .
+        run: |
+          docker build -t signalen/frontend:$GITHUB_SHA .
+          docker build -t signalen/frontend:latest .
 
       - name: Docker push
-        run: docker push signalen/frontend:$GITHUB_SHA
+        run: |
+          docker push signalen/frontend:$GITHUB_SHA
+          docker push signalen/frontend:latest

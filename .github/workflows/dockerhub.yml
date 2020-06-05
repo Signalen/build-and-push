@@ -14,19 +14,18 @@ jobs:
         with:
           repository: Amsterdam/signals
           ref: master
+          fetch-depth: 0
 
       - name: Docker login
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-      - name: Docker build
+      - name: Docker build and push
         run: |
           cd api/
-          docker build -t signalen/backend:$GITHUB_SHA .
+          export IMAGE_TAG=$(git describe --tags)
+          docker build -t signalen/backend:$IMAGE_TAG .
           docker build -t signalen/backend:latest .
-
-      - name: Docker push
-        run: |
-          docker push signalen/backend:$GITHUB_SHA
+          docker push signalen/backend:$IMAGE_TAG
           docker push signalen/backend:latest
 
   frontend:
@@ -38,16 +37,15 @@ jobs:
         with:
           repository: Amsterdam/signals-frontend
           ref: develop
+          fetch-depth: 0
 
       - name: Docker login
         run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
       - name: Docker build
         run: |
-          docker build -t signalen/frontend:$GITHUB_SHA .
+          export IMAGE_TAG=$(git describe --tags)
+          docker build -t signalen/frontend:$IMAGE_TAG .
           docker build -t signalen/frontend:latest .
-
-      - name: Docker push
-        run: |
-          docker push signalen/frontend:$GITHUB_SHA
+          docker push signalen/frontend:$IMAGE_TAG
           docker push signalen/frontend:latest

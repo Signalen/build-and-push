@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: Amsterdam/signals-frontend
-          ref: develop
+          ref: master
           fetch-depth: 0
 
       - name: Docker login

@@ -1,7 +1,7 @@
 name: Sync with upstream
 
 on:
-  push:
+  workflow_dispatch:
   schedule:
     - cron: '42 2 * * *'
 

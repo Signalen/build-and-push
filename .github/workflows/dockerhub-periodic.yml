@@ -1,6 +1,5 @@
-name: Build and push to Docker Hub
+name: Periodic build and push to Docker Hub
 on:
-  push:
   schedule:
     - cron: '42 2 * * *'
 

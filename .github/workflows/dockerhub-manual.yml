@@ -1,12 +1,12 @@
-name: Manual build and push tag to Docker Hub
+name: Manual build and push to Docker Hub
 on:
   workflow_dispatch:
     inputs:
       backendTag:
-        description: Git tag of the backend
+        description: Ref of the backend
         required: true
       frontendTag:
-        description: Git tag of the frontend
+        description: Ref of the frontend
         required: true
 
 jobs:
@@ -29,9 +29,7 @@ jobs:
           cd api/
           export IMAGE_TAG=$(git describe --tags)
           docker build -t signalen/backend:$IMAGE_TAG .
-          docker build -t signalen/backend:latest .
           docker push signalen/backend:$IMAGE_TAG
-          docker push signalen/backend:latest
 
   frontend:
     name: Frontend
@@ -51,6 +49,4 @@ jobs:
         run: |
           export IMAGE_TAG=$(git describe --tags)
           docker build -t signalen/frontend:$IMAGE_TAG .
-          docker build -t signalen/frontend:latest .
           docker push signalen/frontend:$IMAGE_TAG
-          docker push signalen/frontend:latest
